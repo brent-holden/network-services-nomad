@@ -1,6 +1,7 @@
 job "unifi" {
   datacenters = ["lab"]
-  type = "service"
+  type        = "service"
+  priority    = 2
 
   constraint {
     attribute = "${meta.network_node}"
@@ -45,10 +46,13 @@ job "unifi" {
       port = "web-admin"
 
       check {
-        type     = "tcp"
-        port     = "web-admin"
-        interval = "30s"
-        timeout  = "5s"
+        type      = "http"
+        protocol  = "https"
+        tls_skip_verify = "true"
+        port      = "web-admin"
+        path      = "/manage/account/login"
+        interval  = "30s"
+        timeout   = "5s"
 
         check_restart {
           limit = 2
