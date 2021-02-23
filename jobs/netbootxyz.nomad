@@ -1,6 +1,6 @@
 job "netbootxyz" {
   datacenters = ["lab"]
-  type = "service"
+  type        = "service"
 
   constraint {
     attribute = "${meta.network_node}"
@@ -8,29 +8,28 @@ job "netbootxyz" {
   }
 
   update {
-    max_parallel = 1
-    min_healthy_time = "5s"
-    healthy_deadline = "2m"
+    max_parallel      = 1
+    min_healthy_time  = "5s"
+    healthy_deadline  = "2m"
     progress_deadline = "3m"
-    auto_revert = true
-    canary = 0
+    auto_revert       = true
+    canary            = 0
   }
 
   group "netbootxyz" {
     count = 1
     network {
       port "netbootxyz" {
-        static = 3000
-        host_network = "lab"
+        static        = 3000
+        host_network  = "lab"
       }
       port "tftp" {
-        static = 69
-        host_network = "lab"
+        static        = 69
+        host_network  = "lab"
      }
       port "webconsole" {
-        static = 8000
-        to = 80
-        host_network = "lab"
+        static        = 8000
+        host_network  = "lab"
       }
     }
 
@@ -39,38 +38,39 @@ job "netbootxyz" {
       tags = ["http","provisioning"]
       port = "netbootxyz"
 
-#      check {
-#        type     = "tcp"
-#	port     = "netbootxyz"
-#        interval = "60s"
-#        timeout  = "2s"
-#      }
+      check {
+        type     = "tcp"
+        port     = "netbootxyz"
+        interval = "60s"
+        timeout  = "5s"
+      }
     }
-
-    ephemeral_disk {
-      sticky = true
-      size = 2048
-    }
-
 
     task "netbootxyz" {
-      driver = "podman"
+      driver = "containerd-driver"
 
       env {
-       PGID = "1000"
-       PUID = "1000" 
+        PGID = "1000"
+        PUID = "1000" 
       }
 
       config {
-        image = "docker://linuxserver/netbootxyz:latest"
-        network_mode = "bridge"
-        ports = ["netbootxyz", "tftp", "webconsole"]
-        volumes = ["/opt/netbootxyz/config:/config","/opt/netbootxyz/assets:/assets"]
-
-        cap_add = [
-          "NET_ADMIN"
-        ]
-
+        image         = "docker.io/linuxserver/netbootxyz:latest"
+        host_network  = true
+        mounts        = [
+                          {
+                            type    = "bind"
+                            target  = "/config"
+                            source  = "/opt/netbootxyz/config"
+                            options = ["rbind", "rw"]
+                          },
+                          {
+                            type    = "bind"
+                            target  = "/assets"
+                            source  = "/opt/netbootxyz/assets"
+                            options = ["rbind", "rw"]
+                          }
+                        ]
       }
 
       resources {
