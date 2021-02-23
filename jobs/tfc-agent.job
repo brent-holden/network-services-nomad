@@ -29,16 +29,16 @@ job "tfc-agent" {
     }
 
     task "tfc-agent" {
-      driver = "podman"
+      driver = "containerd-driver"
 
       env {
-        TFC_AGENT_TOKEN = "{{YOUR_TFC_TOKEN_HERE}}"
-        TFC_AGENT_NAME  = "tfc-agent"
+        TFC_AGENT_TOKEN = "VVXlVTIQo7JE3w.atlasv1.71MqfroJ4zgVM6PPvGN9AgyXZhLdUj4qEvMo9PabX2D1RfdMPFIgjnlYjyWNkbURYUA"
+        TFC_AGENT_NAME  = "cerberus"
       }
 
       config {
-        image         = "docker://docker.io/hashicorp/tfc-agent:${RELEASE}"
-        network_mode  = "host"
+        image         = "docker.io/hashicorp/tfc-agent:${RELEASE}"
+        host_network  = true
       }
 
       template {
