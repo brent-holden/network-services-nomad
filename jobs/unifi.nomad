@@ -46,28 +46,15 @@ job "unifi" {
       port = "web-admin"
 
       check {
-        type      = "http"
-        protocol  = "https"
-        tls_skip_verify = "true"
+        type      = "tcp"
         port      = "web-admin"
-        path      = "/manage/account/login"
-        interval  = "30s"
-        timeout   = "5s"
-
-        check_restart {
-          limit = 2
-          grace = "60s"
-        }
+        interval  = "60s"
+        timeout   = "10s"
       }
     }
 
-    ephemeral_disk {
-      sticky  = true
-      size    = 512
-    }
-
     task "unifi" {
-      driver = "podman"
+      driver = "containerd-driver"
 
       env {
         PUID  = "1000"
@@ -75,10 +62,17 @@ job "unifi" {
       }
 
       config {
-        image         = "docker://docker.io/linuxserver/unifi-controller:${RELEASE}"
-        network_mode  = "host"
-        ports         = ["stun", "ap-disco", "dev-comms", "web-admin", "disco", "guest-portal-https", "guest-portal-http", "throughput", "rsyslog"]
-        volumes       = ["/opt/unifi:/config"]
+        image         = "docker.io/linuxserver/unifi-controller:${RELEASE}"
+        host_network  = true
+
+        mounts        = [
+                          {
+                            type    = "bind"
+                            target  = "/config"
+                            source  = "/opt/unifi"
+                            options = ["rbind", "rw"]
+                          }
+                    ]
       }
 
       template {
@@ -89,7 +83,7 @@ job "unifi" {
 
       resources {
         cpu    = 500
-        memory = 1024
+        memory = 2048
       }
 
       kill_timeout = "30s"
