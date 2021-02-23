@@ -73,6 +73,12 @@ job "netbootxyz" {
                         ]
       }
 
+      template {
+        data          = "IMAGE_DIGEST={{ keyOrDefault \"netbootxyz/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"netbootxyz/config/release\" \"latest\"}}"
+        destination   = "env_info"
+        env           = true
+      }
+
       resources {
         cpu    = 3000
         memory = 1048

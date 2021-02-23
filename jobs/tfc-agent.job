@@ -42,7 +42,7 @@ job "tfc-agent" {
       }
 
       template {
-        data          = "IMAGE_ID={{ keyOrDefault \"tfc-agent/config/image_id\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}"
+        data          = "IMAGE_DIGEST={{ keyOrDefault \"tfc-agent/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}"
         destination   = "env_info"
         env           = true
       }
