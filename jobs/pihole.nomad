@@ -42,21 +42,11 @@ job "pihole" {
         port     = "dns"
         interval = "30s"
         timeout  = "5s"
-
-        check_restart {
-          limit = 2
-          grace = "60s"
-        }
       }
     }
 
-    ephemeral_disk {
-      sticky  = true
-      size    = 512
-    }
-
     task "pihole" {
-      driver = "podman"
+      driver = "containerd-driver"
 
       env {
         ServerIP          = "192.168.0.2"
@@ -66,10 +56,22 @@ job "pihole" {
       }
 
       config {
-        image         = "docker://docker.io/pihole/pihole:${RELEASE}"
-        network_mode  = "host"
-        ports         = ["dns","http"]
-        volumes       = ["/opt/pihole/etc:/etc/pihole","/opt/pihole/dnsmasq.d:/etc/dnsmasq.d"]
+        image         = "docker.io/pihole/pihole:${RELEASE}"
+        host_network  = true
+        mounts        = [
+                          {
+                            type    = "bind"
+                            target  = "/etc/pihole"
+                            source  = "/opt/pihole/etc"
+                            options = ["rbind", "rw"]
+                          },
+                          {
+                            type    = "bind"
+                            target  = "/etc/dnsmasq.d"
+                            source  = "/opt/pihole/dnsmasq.d"
+                            options = ["rbind", "rw"]
+                          }
+                    ]
       }
 
       template {
