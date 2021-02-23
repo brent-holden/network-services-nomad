@@ -1,6 +1,7 @@
 job "pihole" {
   datacenters = ["lab"]
-  type = "service"
+  type        = "service"
+  priority    = 2
 
   constraint {
     attribute = "${meta.network_node}"
