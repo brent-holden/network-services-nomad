@@ -9,21 +9,16 @@ job "tfc-agent" {
   }
 
   update {
-    max_parallel      = 1
-    health_check      = "checks"
-    min_healthy_time  = "5s"
-    healthy_deadline  = "2m"
-    progress_deadline = "3m"
-    auto_revert       = true
-    canary            = 0
+    max_parallel  = 0
+    auto_revert   = true
   }
 
   group "tfc-agent" {
     count = 1
 
     restart {
-      interval  = "2h"
-      attempts  = 10
+      interval  = "12h"
+      attempts  = 720
       delay     = "60s"
       mode      = "delay"
     }
@@ -31,18 +26,18 @@ job "tfc-agent" {
     task "tfc-agent" {
       driver = "containerd-driver"
 
-      env {
-        TFC_AGENT_TOKEN = "VVXlVTIQo7JE3w.atlasv1.71MqfroJ4zgVM6PPvGN9AgyXZhLdUj4qEvMo9PabX2D1RfdMPFIgjnlYjyWNkbURYUA"
-        TFC_AGENT_NAME  = "cerberus"
-      }
-
       config {
         image         = "docker.io/hashicorp/tfc-agent:${RELEASE}"
         host_network  = true
       }
+      
+      env {
+        TFC_AGENT_TOKEN = "${TFC_AGENT_TOKEN}"
+        TFC_AGENT_NAME  = "${TFC_AGENT_NAME}"
+      }
 
       template {
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"tfc-agent/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}"
+        data          = "IMAGE_DIGEST={{ keyOrDefault \"tfc-agent/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}\nTFC_AGENT_TOKEN={{ key \"/tfc-agent/config/token\" }}\nTFC_AGENT_NAME={{ key \"/tfc-agent/config/name\" }}"
         destination   = "env_info"
         env           = true
       }
