@@ -9,21 +9,17 @@ job "unifi" {
   }
 
   update {
-    max_parallel      = 1
-    health_check      = "checks"
-    min_healthy_time  = "5s"
-    healthy_deadline  = "2m"
-    progress_deadline = "3m"
-    auto_revert       = true
-    canary            = 0
+    max_parallel  = 0
+    health_check  = "checks"
+    auto_revert   = true
   }
 
   group "unifi" {
     count = 1
 
     restart {
-      interval  = "2h"
-      attempts  = 10
+      interval  = "12h"
+      attempts  = 720
       delay     = "60s"
       mode      = "delay"
     }
@@ -46,10 +42,18 @@ job "unifi" {
       port = "web-admin"
 
       check {
-        type      = "tcp"
-        port      = "web-admin"
-        interval  = "60s"
-        timeout   = "10s"
+        type            = "http"
+        port            = "web-admin"
+        protocol        = "https"
+        path            = "/manage/account/login"
+        tls_skip_verify = true
+        interval        = "30s"
+        timeout         = "5s"
+
+        check_restart {
+          limit = 10000
+          grace = "60s"
+        }
       }
     }
 
