@@ -26,14 +26,6 @@ job "tfc-agent" {
     task "tfc-agent" {
       driver = "containerd-driver"
 
-<<<<<<< HEAD
-      env {
-        TFC_AGENT_TOKEN = "kVqibqy9XBdUWQ.atlasv1.lwT7X3lrv5MO7hIYzk2vSvlLXRyj5XnLJjeWE8j6Obt0a6RFJ8xmRW0IsivnstMmrBo"
-        TFC_AGENT_NAME  = "cerberus"
-      }
-
-=======
->>>>>>> db8482157151c0342a371c4ee70685393f68a642
       config {
         image         = "docker.io/hashicorp/tfc-agent:${RELEASE}"
         host_network  = true
@@ -45,14 +37,10 @@ job "tfc-agent" {
       }
 
       template {
-<<<<<<< HEAD
         data          = <<EOH
 IMAGE_DIGEST={{ keyOrDefault "tfc-agent/config/image_digest" "1" }}
 RELEASE={{ keyOrDefault "tfc-agent/config/release" "latest" }}
 EOH
-=======
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"tfc-agent/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}\nTFC_AGENT_TOKEN={{ key \"/tfc-agent/config/token\" }}\nTFC_AGENT_NAME={{ key \"/tfc-agent/config/name\" }}"
->>>>>>> db8482157151c0342a371c4ee70685393f68a642
         destination   = "env_info"
         env           = true
       }
