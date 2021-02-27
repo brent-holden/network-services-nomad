@@ -74,7 +74,10 @@ job "netbootxyz" {
       }
 
       template {
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"netbootxyz/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"netbootxyz/config/release\" \"latest\"}}"
+        data          = <<EOH
+IMAGE_DIGEST={{ keyOrDefault "netbootxyz/config/image_digest" "1" }}
+RELEASE={{ keyOrDefault "netbootxyz/config/release" "latest" }}
+EOH
         destination   = "env_info"
         env           = true
       }

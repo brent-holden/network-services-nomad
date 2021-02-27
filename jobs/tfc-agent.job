@@ -32,7 +32,7 @@ job "tfc-agent" {
       driver = "containerd-driver"
 
       env {
-        TFC_AGENT_TOKEN = "VVXlVTIQo7JE3w.atlasv1.71MqfroJ4zgVM6PPvGN9AgyXZhLdUj4qEvMo9PabX2D1RfdMPFIgjnlYjyWNkbURYUA"
+        TFC_AGENT_TOKEN = "kVqibqy9XBdUWQ.atlasv1.lwT7X3lrv5MO7hIYzk2vSvlLXRyj5XnLJjeWE8j6Obt0a6RFJ8xmRW0IsivnstMmrBo"
         TFC_AGENT_NAME  = "cerberus"
       }
 
@@ -42,7 +42,10 @@ job "tfc-agent" {
       }
 
       template {
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"tfc-agent/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"tfc-agent/config/release\" \"latest\"}}"
+        data          = <<EOH
+IMAGE_DIGEST={{ keyOrDefault "tfc-agent/config/image_digest" "1" }}
+RELEASE={{ keyOrDefault "tfc-agent/config/release" "latest" }}
+EOH
         destination   = "env_info"
         env           = true
       }
@@ -51,8 +54,7 @@ job "tfc-agent" {
         cpu    = 100
         memory = 128
       }
-
-      kill_timeout = "30s"
+      kill_timeout  = "30s"
     }
   }
 }

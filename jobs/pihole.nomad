@@ -75,9 +75,11 @@ job "pihole" {
                     ]
       }
 
-
       template {
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"pihole/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"pihole/config/release\" \"latest\"}}"
+        data          = <<EOH
+IMAGE_DIGEST={{ keyOrDefault "pihole/config/image_digest" "1" }}
+RELEASE={{ keyOrDefault "pihole/config/release" "latest"}}
+EOH
         destination   = "env_info"
         env           = true
       }

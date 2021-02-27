@@ -76,7 +76,10 @@ job "unifi" {
       }
 
       template {
-        data          = "IMAGE_DIGEST={{ keyOrDefault \"unifi/config/image_digest\" \"1\" }}\nRELEASE={{ keyOrDefault \"unifi/config/release\" \"latest\"}}"
+        data          = <<EOH
+IMAGE_DIGEST={{ keyOrDefault "unifi/config/image_digest" "1" }}
+RELEASE={{ keyOrDefault "unifi/config/release" "latest" }}
+EOH
         destination   = "env_info"
         env           = true
       }
