@@ -29,38 +29,39 @@ job "pihole" {
       port "http" { static = 80 }
     }
 
-    service {
-      name = "pihole"
-      tags = ["http","dns"]
-      port = "dns"
-
-      check {
-        type     = "tcp"
-        port     = "dns"
-        interval = "30s"
-        timeout  = "5s"
-
-        check_restart {
-          limit = 10000
-          grace = "60s"
-        }
-      }
-
-      check {
-        type      = "http"
-        port      = "http"
-        path      = "/admin/"
-        interval  = "30s"
-        timeout   = "5s"
-
-        check_restart {
-          limit = 10000
-          grace = "60s"
-        }
-      }
-    }
     task "pihole" {
       driver = "containerd-driver"
+
+      service {
+        name = "pihole"
+        tags = ["http","dns"]
+        port = "dns"
+
+        check {
+          type     = "tcp"
+          port     = "dns"
+          interval = "30s"
+          timeout  = "5s"
+
+          check_restart {
+            limit = 10000
+            grace = "60s"
+          }
+        }
+
+        check {
+          type      = "http"
+          port      = "http"
+          path      = "/admin/"
+          interval  = "30s"
+          timeout   = "5s"
+
+          check_restart {
+            limit = 10000
+            grace = "60s"
+          }
+        }
+      }
 
       env {
         ServerIP          = "192.168.0.2"
