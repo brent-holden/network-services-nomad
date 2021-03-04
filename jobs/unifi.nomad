@@ -8,20 +8,13 @@ job "unifi" {
     value     = "true"
   }
 
-  update {
-    max_parallel  = 0
-    health_check  = "checks"
-    auto_revert   = true
-  }
-
   group "unifi" {
     count = 1
 
-    restart {
-      interval  = "12h"
-      attempts  = 720
-      delay     = "60s"
-      mode      = "delay"
+    update {
+      max_parallel  = 0
+      health_check  = "checks"
+      auto_revert   = true
     }
 
     network {
@@ -36,29 +29,36 @@ job "unifi" {
       port "rsyslog" { static = 5514 }
     }
 
-    service {
-      name = "unifi"
-      tags = ["http","unifi"]
-      port = "web-admin"
-
-      check {
-        type            = "http"
-        port            = "web-admin"
-        protocol        = "https"
-        path            = "/manage/account/login"
-        tls_skip_verify = true
-        interval        = "30s"
-        timeout         = "5s"
-
-        check_restart {
-          limit = 10000
-          grace = "60s"
-        }
-      }
-    }
-
     task "unifi" {
       driver = "containerd-driver"
+
+      service {
+        name = "unifi"
+        tags = ["http","unifi"]
+        port = "web-admin"
+
+        check {
+          type            = "http"
+          port            = "web-admin"
+          protocol        = "https"
+          path            = "/manage/account/login"
+          tls_skip_verify = true
+          interval        = "30s"
+          timeout         = "5s"
+
+          check_restart {
+            limit = 10000
+            grace = "60s"
+          }
+        }
+      }
+
+      restart {
+        interval  = "12h"
+        attempts  = 720
+        delay     = "60s"
+        mode      = "delay"
+      }
 
       env {
         PUID  = "1000"
