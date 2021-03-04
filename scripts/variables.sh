@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 declare -A SERVICES=( [pihole]=docker.io/pihole/pihole:latest
-                      [netbootxyz]=docker.io/linuxserver/netbootxyz:latest
+                      [netbootxyz]=docker.io/linuxserver/netbootxyz:latest,auto_update
                       [unifi]=docker.io/linuxserver/unifi-controller:latest
-                      [tfc-agent]=docker.io/hashicorp/tfc-agent:latest
+                      [tfc-agent]=docker.io/hashicorp/tfc-agent:latest,auto_update
                     )
 
 declare -A BACKUPS=(  [pihole]=/opt/pihole
