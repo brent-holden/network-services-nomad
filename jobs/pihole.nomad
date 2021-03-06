@@ -48,19 +48,6 @@ job "pihole" {
             grace = "60s"
           }
         }
-
-        check {
-          type      = "http"
-          port      = "http"
-          path      = "/admin/"
-          interval  = "30s"
-          timeout   = "5s"
-
-          check_restart {
-            limit = 10000
-            grace = "60s"
-          }
-        }
       }
 
       env {
