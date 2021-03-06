@@ -26,7 +26,7 @@ job "netbootxyz" {
     network {
       port "netbootxyz" {
         static        = 3000
-        host_network  = "lab"
+        host_network  = "default"
       }
       port "tftp" {
         static        = 69
