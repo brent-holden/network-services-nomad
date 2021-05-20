@@ -24,11 +24,10 @@ job "tfc-agent" {
     }
 
     task "tfc-agent" {
-      driver = "containerd-driver"
+      driver = "docker"
 
       config {
         image         = "docker.io/hashicorp/tfc-agent:${RELEASE}"
-        host_network  = true
       }
       
       env {
@@ -37,12 +36,12 @@ job "tfc-agent" {
       }
 
       template {
-        data          = <<EOH
-IMAGE_DIGEST={{ keyOrDefault "tfc-agent/config/image_digest" "1" }}
-RELEASE={{ keyOrDefault "tfc-agent/config/release" "latest" }}
-TFC_AGENT_TOKEN={{ key "tfc-agent/config/token" }}
-TFC_AGENT_NAME={{ key "tfc-agent/config/name" }}
-EOH
+        data          = <<-EOH
+          IMAGE_DIGEST={{ keyOrDefault "tfc-agent/config/image_digest" "1" }}
+          RELEASE={{ keyOrDefault "tfc-agent/config/release" "latest" }}
+          TFC_AGENT_TOKEN={{ key "tfc-agent/config/token" }}
+          TFC_AGENT_NAME={{ key "tfc-agent/config/name" }}
+          EOH
         destination   = "env_info"
         env           = true
       }
