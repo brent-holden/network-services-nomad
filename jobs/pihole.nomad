@@ -30,7 +30,7 @@ job "pihole" {
     }
 
     task "pihole" {
-      driver = "containerd-driver"
+      driver        = "docker"
 
       service {
         name = "pihole"
@@ -59,28 +59,35 @@ job "pihole" {
 
       config {
         image         = "docker.io/pihole/pihole:${RELEASE}"
-        host_network  = true
-        mounts        = [
-                          {
-                            type    = "bind"
-                            target  = "/etc/pihole"
-                            source  = "/opt/pihole/etc"
-                            options = ["rbind", "rw"]
-                          },
-                          {
-                            type    = "bind"
-                            target  = "/etc/dnsmasq.d"
-                            source  = "/opt/pihole/dnsmasq.d"
-                            options = ["rbind", "rw"]
-                          }
-                    ]
+        network_mode  = "host"
+
+        mount {
+          type    = "bind"
+          target  = "/etc/pihole"
+          source  = "/opt/pihole/etc"
+          readonly = false
+          bind_options {
+            propagation = "rshared"
+          }
+        }
+
+        mount {
+          type    = "bind"
+          target  = "/etc/dnsmasq.d"
+          source  = "/opt/pihole/dnsmasq.d"
+          readonly = false
+          bind_options {
+            propagation = "rshared"
+          }
+        }
+
       }
 
       template {
-        data          = <<EOH
-IMAGE_DIGEST={{ keyOrDefault "pihole/config/image_digest" "1" }}
-RELEASE={{ keyOrDefault "pihole/config/release" "latest"}}
-EOH
+        data          = <<-EOH
+          IMAGE_DIGEST={{ keyOrDefault "pihole/config/image_digest" "1" }}
+          RELEASE={{ keyOrDefault "pihole/config/release" "latest"}}
+          EOH
         destination   = "env_info"
         env           = true
       }
