@@ -24,6 +24,7 @@ job "netbootxyz" {
     }
 
     network {
+      mode  = "bridge"
       port "netbootxyz" {
         static        = 3000
         host_network  = "default"
@@ -51,14 +52,14 @@ job "netbootxyz" {
         timeout   = "2s"
 
         check_restart {
-          limit = 10000
-          grace = "60s"
+          limit = 2
+          grace = "10s"
         }
       }
     }
 
     task "netbootxyz" {
-      driver = "containerd-driver"
+      driver = "docker"
 
       env {
         PGID = "1000"
@@ -67,28 +68,34 @@ job "netbootxyz" {
 
       config {
         image         = "docker.io/linuxserver/netbootxyz:latest"
-        host_network  = true
-        mounts        = [
-                          {
-                            type    = "bind"
-                            target  = "/config"
-                            source  = "/opt/netbootxyz/config"
-                            options = ["rbind", "rw"]
-                          },
-                          {
-                            type    = "bind"
-                            target  = "/assets"
-                            source  = "/opt/netbootxyz/assets"
-                            options = ["rbind", "rw"]
-                          }
-                        ]
+
+        mount {
+          type    = "bind"
+          target  = "/config"
+          source  = "/opt/netbootxyz/config"
+          readonly = false
+          bind_options {
+            propagation = "rshared"
+          }
+        }
+
+        mount {
+          type    = "bind"
+          target  = "/assets"
+          source  = "/opt/netbootxyz/assets"
+          readonly = false
+          bind_options {
+            propagation = "rshared"
+          }
+        }
+
       }
 
       template {
-        data          = <<EOH
-IMAGE_DIGEST={{ keyOrDefault "netbootxyz/config/image_digest" "1" }}
-RELEASE={{ keyOrDefault "netbootxyz/config/release" "latest" }}
-EOH
+        data          = <<-EOH
+          IMAGE_DIGEST={{ keyOrDefault "netbootxyz/config/image_digest" "1" }}
+          RELEASE={{ keyOrDefault "netbootxyz/config/release" "latest" }}
+          EOH
         destination   = "env_info"
         env           = true
       }
